@@ -24,11 +24,11 @@ export const SignUpUser = async (req,res) => {
         .insert([{
             id_user: authData.user.id,// El UUID de Auth
             name_user,
-            email_user: email, //EL EMAIL DE Auth
+            email_user: email //EL EMAIL DE Auth
             }])
         .select();
-    if (authError) return res.status(400).json({authError: error.message})
-        console.log("DATOS DE USER DESDE DB:", userData);
+    if (error) return res.status(400).json({authError: error.message})
+        console.log("DATOS DE USER DESDE DB:", data);
         res.status(201).json({ message: "Usuario creado y autenticado", user: data[0] });
 }catch(error){
     res.status(500).json({ authError: "Error en el servidor" });
@@ -50,7 +50,7 @@ export const SignInUser = async (req,res)=>{
         .from('users')
         .select(`
             id_user,
-            name_user,
+            name_user
         `)
         .eq('id_user',authData.user.id)//USAMOS EL UUID DE REFERENCIA
         .single();
@@ -157,7 +157,7 @@ export const getUser = async (req,res) => {
         .select(`
             id_user,
             name_user,
-            email_user,
+            email_user
             `)
         .eq('id_user' ,idUser)
         .single();

@@ -1,5 +1,6 @@
 import express from 'express';
 import userRoutes from './routes/usersRoutes.js';
+import busRotes from './routes/busRoutes.js'
 const app = express();
 app.use(express.json());
 app.use((req, res, next) => {
@@ -8,4 +9,5 @@ app.use((req, res, next) => {
 });
 
 app.use('/api/users', userRoutes);
+app.use('/api/bus',busRotes);
 export default app;
