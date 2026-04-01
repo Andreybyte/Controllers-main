@@ -10,4 +10,5 @@ app.use((req, res, next) => {
 
 app.use('/api/users', userRoutes);
 app.use('/api/bus',busRotes);
+app.use('/api/bus',highSchoolRoutes);
 export default app;

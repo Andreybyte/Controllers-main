@@ -1,9 +1,10 @@
 import express from "express";
-import { putBusData } from "../controllers/busCoordinatesControllers.js";
+
+import { putHighSchoolData } from "../controllers/highSchoolControllers.js";
 import { protectRoute } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
-router.put('/:id_route', protectRoute,putBusData);
+router.put('/:id_highschool', protectRoute,putHighSchoolData);
 
 export default router;

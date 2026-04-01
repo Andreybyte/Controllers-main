@@ -2,7 +2,7 @@ import { supabase } from '../config/supabase.js';
 
 export const putBusData = async(req,res) => {
     try{
-        const{id_route} = req.params
+        const{id_route} = req.params;
         const{current_lat,current_long,velocity} = req.body;
         const {data,error} = await supabase
             .from('currentbusinroute')
@@ -12,7 +12,7 @@ export const putBusData = async(req,res) => {
 
         if (error)return res.status(400).json({error:error.message})
         if (data.length==0){
-            return res.status(400).json({error: "No se encontro la coordenada a actualizar"})
+            return res.status(400).json({error: "No se actualizo la coordenada correctamente"})
         }
         res.json({message: "Actualizado correctamente", data})
 
