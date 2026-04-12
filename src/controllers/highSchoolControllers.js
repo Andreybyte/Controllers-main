@@ -17,7 +17,7 @@ export const putHighSchoolData = async(req, res) => {
         }
 
     }catch(error){
-        res.status(500).json({error: 'Error del servidor'})
+        res.status(500).json({error: 'Error del servidor'});
     }
 
 }
@@ -27,19 +27,37 @@ export const getHighSchoolProfile = async(req,res) => {
         const {idhighschool} = req.params;
         const {data, error} = await supabase
             .from('highschool')
-            .select(
-                'name_highschool',
-                'location_latitud',
-                'location_longitud'
-            )
+            .select(`
+                name_highschool,
+                location_latitud,
+                location_longitud
+                `)
             .eq('id_highschool',idhighschool)
-            .single();
-        res.json(data);    
-        if (error) return res.status(400).json({error:error.message})
+            .single();    
+        if (error) return res.status(400).json({error:error.message});
+        res.json(data);
     }catch(error){
-        res.status(500).json({error:'Error al obtener el perfil completo'})
+        res.status(500).json({error:'Error al obtener el perfil completo'});
 
     }
     
 
 }
+
+export const deleteHighSchoolProfile = async(req,res) => {
+
+    try{
+        const{idHighSchool} = req.params;
+        const {error} = await supabase
+            .from('highschool')
+            .delete()
+            .eq('id_highschool', idHighSchool);
+
+        if (error) return res.status(400).json({error: error.message})
+            res.json({message:`Colegio ${idHighSchool} eliminado`});
+            console.log(`Colegio ${idHighSchool} eliminado`);
+    }catch(error){
+        res.status(500).json({error:'Error del servidor'});
+    }
+}
+
