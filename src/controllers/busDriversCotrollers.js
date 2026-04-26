@@ -38,3 +38,53 @@ export const SignUpBusDriver = async (req, res )=> {
     }
 
 }
+
+export const signInUser = async (req, res) => {
+
+    try{
+    const { email_busdriver: email, password_busdriver} = await supabase.auth.signInWithPassword({
+        email,
+        password,
+    });
+    if (authError) return res.status(400).json({authError: ' Credenciales Incorrectas'});
+
+    const {data: userData, error: userError}= await supabase
+
+       .from('busdrivers')
+       .select(`
+           id_busdriver,
+           name_busdriver
+
+            `)
+       .eq('id_busdriver', authData.busdriver.id)
+       .single()
+        ;
+            if (userError || !userData){
+            console.error('Error de SUPABASE:', userError);
+            res.status(404).json({error: "ERROR"});
+            return
+            }
+
+        console.log('DATOS DE BUSDRIVER DESDE DB:', userData);
+
+        res.status(200).json({
+
+            message: ' Bienvenido a BusApp',
+            token: authData.session.access_token,
+            user: {
+
+            }
+
+
+        });
+
+
+
+
+        
+        
+        
+
+    }
+
+}
