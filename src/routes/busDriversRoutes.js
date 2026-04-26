@@ -1,13 +1,16 @@
 import express from "express";
-import {SignUpBusDriver} from '../controllers/busDriversCotrollers';
-import router from "./usersRoutes";
+import {signUpBusDriver, signInBusDriver, putBusDriver, deleteBusDriver, getBusDriverProfile } from '../controllers/busDriversCotrollers';
 import { protectRoute } from "../middlewares/authMiddleware";
 
 
 const router = express.Router();
 
-router.post('/signup', SignUpBusDriver);
+router.post('/signup', signUpBusDriver, );
+router.post('/login', signInBusDriver);
+//router.get('/:idBusDriver',);
+router.get('/:idBusDriver', protectRoute, getBusDriverProfile);
+router.delete('/:idBusDriver', deleteBusDriver);
+router.put('/:idBusDriver', putBusDriver);
 
-router.get('/:id_busdriver', protectRoute, getUser);
 
 export default router;

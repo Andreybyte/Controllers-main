@@ -1,6 +1,6 @@
 import { supabase } from "../config/supabase.js";
 
-export const SignUpBusDriver = async (req, res )=> {
+export const signUpBusDriver = async (req, res )=> {
     //Esta funcion realiza el post del conductor, pedimos todos los datos necesarios
 
     console,log,("Cuerpo recibido:", req.body) ;
@@ -39,7 +39,7 @@ export const SignUpBusDriver = async (req, res )=> {
 
 };//CREAR CONDUCTOR
 
-export const signInUser = async (req, res) => {
+export const signInBusDriver = async (req, res) => {
     //SE LOGUEA AL USUARIO CON UNA CUENTA ANTERIORMENTE CREA, NOS DEVOLVERA UN TOKEN UNICO CON EL QUE PODRA ACCEDER A FUNCIONES UNICAS PARA EL, 
 
     try{
@@ -127,7 +127,7 @@ export const deleteBusDriver = async (req, res) => {
 }//BORRAR USUARIOS(SOLO PARA ADMINS)
 
 
-export const getMYBusDriverProfile = async (req, res) => {
+export const getBusDriverProfile = async (req, res) => {
     try{
         const idBusDriver = req.busdriver.id;
 

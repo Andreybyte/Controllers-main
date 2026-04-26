@@ -8,7 +8,6 @@ const router = express.Router();
 
 router.post('/signup',SignUpUser);
 router.post('/login',SignInUser);
-
 /*El protectRoute verifica que seas parte de la base de datos pidiendote el token unico que solo pueden acceder usuarios y admins, Carpeta:(middlewares) */
  //A partir de aqui todos los datos estan protegidos
 
