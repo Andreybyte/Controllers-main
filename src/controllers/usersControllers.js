@@ -92,7 +92,7 @@ export const putUser = async (req,res) => {
         .select();
     if (error) return res.status(400).json({error: error.message})
     if (data.length === 0){
-        return res.status(404).json({ error: "No se encontró el socio para actualizar" });
+        return res.status(404).json({ error: "No se encontró el usuario para actualizar" });
     }
         res.json({message: "Actualizado Correctamente", data});
 }catch(error){
@@ -115,7 +115,7 @@ export const getMyProfile = async (req,res) =>{
     try{
     const userId = req.user.id;
 
-    let {data:profile,error: userError} = await supabase
+    const {data:profile,error: userError} = await supabase
         .from('users')
         .select('*')
         .eq('id_user',userId)
