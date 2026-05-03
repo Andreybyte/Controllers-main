@@ -3,7 +3,7 @@ import cors from 'cors';
 import userRoutes from './routes/usersRoutes.js';
 import busRotes from './routes/busRoutes.js';
 import busDriversRoutes from './routes/busDriversRoutes.js';
-import highSchoolRoutes from './routes/highSchoolRoutes';
+import highSchoolRoutes from './routes/highSchoolRoutes.js';
 
 const app = express();
 app.use(cors());

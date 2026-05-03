@@ -1,6 +1,6 @@
 import express from "express";
-import {signUpBusDriver, signInBusDriver, putBusDriver, deleteBusDriver, getBusDriverProfile } from '../controllers/busDriversCotrollers';
-import { protectRoute } from "../middlewares/authMiddleware";
+import {signUpBusDriver, signInBusDriver, putBusDriver, deleteBusDriver, getBusDriverProfile } from '../controllers/busDriversControllers.js';
+import { protectRoute } from "../middlewares/authMiddleware.js";
 
 
 const router = express.Router();

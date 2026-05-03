@@ -1,5 +1,4 @@
 import express from "express";
-
 import { putHighSchoolData } from "../controllers/highSchoolControllers.js";
 import { protectRoute } from "../middlewares/authMiddleware.js";
 
