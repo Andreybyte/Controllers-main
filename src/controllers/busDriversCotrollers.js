@@ -8,24 +8,25 @@ export const signUpBusDriver = async (req, res )=> {
     try{
     const {nameBusDriver, phoneNumberBuDriver, profileImageBusDriver,emailBusDriver, passwordBusDriver}=req.body;
     
-    if(emailBusDriver|| !passwordBusDriver){
-        console.log("¡Faltan datos! Email:", email, "Pass:", password);
+    if(!emailBusDriver|| !passwordBusDriver){
+        console.log("¡Faltan datos! Email:", emailBusDriver, "Pass:", passwordBusDriver);
         return res.status(400).json({error:'Faltan email o contraseña'});
     }
     //Se hace el SIGNUP con el Auth de SUPABASE
     const {data:authData,error:authError} = await supabase.auth.signUp({
         
-        email,
-        password
+        email: emailBusDriver,
+        password: passwordBusDriver
     });
     if (authError) return res.status(400).json({error: authError.message});
     //Pedimos los datos desd el auth de SUPABASE que guardamos y extras
     const {data,error} = await supabase
         .from('busdrivers')
-        .insert([{
+        .insert([{  
             id_busdriver:authData.user.id, //El UUID de Auth
-            name_BusDriver,
-            email_busdriver: email //El  email del Auth
+            name_busdriver,
+            email_busdriver: authData.user.email //El  email del Auth
+
             }])
         .select();
     if (error) return res.status(400).json({authErrorerror:error.message})
@@ -59,7 +60,7 @@ export const signInBusDriver = async (req, res) => {
            name_busdriver
 
             `)
-       .eq('id_busdriver', authData.busdriver.id)
+       .eq('id_busdriver', authData.user.id)
        .single();
             if (userError || !userData){
             console.error('Error de SUPABASE:', userError);
@@ -74,9 +75,9 @@ export const signInBusDriver = async (req, res) => {
             message: ' Bienvenido a BusApp',
             token: authData.session.access_token,
             user: {
-                id: authData.busdriver.id,
-                email: authData.busdriver.email,
-                name: userData.busdriver.name || 'Sin nombre',
+                id: authData.user.id,
+                email: authData.user.email,
+                name: userData.name_busdriver || 'Sin nombre',
 
             }
         });
@@ -97,14 +98,14 @@ export const putBusDriver = async(req,res) => {
     const {idBusDriver} = req.params;
     const{name_BusDriver, email_busdriver} = req.body;
     const{data, error} = await supabase
-        .from('bus_drivers')
+        .from('busdrivers')
         .update({name_BusDriver, email_busdriver})
         .eq('id_busdriver', idBusDriver)
         .select();
     
     if (error) return res.status(400).json({error: error.message});
     if (data.length === 0){
-        return req.status(404).json({error: 'No se encontro el conductor para actualizar'});
+        return res.status(404).json({error: 'No se encontro el conductor para actualizar'});
     }
         res.json({message: 'Actualizado correctamente'});
     }
@@ -118,10 +119,10 @@ export const deleteBusDriver = async (req, res) => {
 
     const {idBusDriver} = req.params;
     const {data, error} = await supabase
-        .from('bus_drivers')
+        .from('busdrivers')
         .delete()
         .eq('id_busdriver', idBusDriver);
-    if(error) return res(400).json({error: error.message});
+    if(error) return res.status(400).json({error: error.message});
     res.json({message: `Conductor ${idBusDriver} eliminado.`})
         
 }//BORRAR USUARIOS(SOLO PARA ADMINS)
@@ -134,7 +135,8 @@ export const getBusDriverProfile = async (req, res) => {
         const {data:profile, error:userError} = await supabase
             .from('busdrivers')
             .select('*')
-            .eq('id_busdriver', idBusDriver);
+            .eq('id_busdriver', idBusDriver)
+            .single();
         if(profile){
             return res.status(200).json({
                 ...profile,
@@ -149,7 +151,7 @@ export const getBusDriverProfile = async (req, res) => {
     }
 
 
-}//OBTENER EL PERFIL DEL BUS DRIVER ✪ ω ✪
+}//OBTENER EL PERFIL DEL BUS DRIVER 
 
 /*
 export const getBusDriver = async (req, res) => {

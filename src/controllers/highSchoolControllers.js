@@ -15,6 +15,7 @@ export const putHighSchoolData = async(req, res) => {
         if (data.length == 0){
             return res.status(400).json({error:'No se actualizaron los datos del colegio correctamente.'})
         }
+        res.status(200).json({message:"Colegio añadido con exito"})
 
     }catch(error){
         res.status(500).json({error: 'Error del servidor'});
