@@ -7,7 +7,7 @@ export const putHighSchoolData = async(req, res) => {
         const{name_highschool,location_latitud,location_longitud} = req.body;
         const {data, error} = await supabase 
             .from('highschool')
-            .update({name_highschool,location_latitud,location_longitud})
+            .insert([{name_highschool,location_latitud,location_longitud}])
             .eq('id_highschool', idHighSchool)
             .select();
 
@@ -51,8 +51,8 @@ export const deleteHighSchoolProfile = async(req,res) => {
         const{idHighSchool} = req.params;
         const {error} = await supabase
             .from('highschool')
-            .delete()
-            .eq('id_highschool', idHighSchool);
+            .eq('id_highschool', idHighSchool)
+            .delete();
 
         if (error) return res.status(400).json({error: error.message})
             res.json({message:`Colegio ${idHighSchool} eliminado`});

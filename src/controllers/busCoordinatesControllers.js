@@ -23,7 +23,7 @@ export const putBusData = async(req,res) => {
 
 }
 // Funcion para obtener el json almacenado de los polylines de la ruta seleccionada
-export const getRoutePPolylines = async(req,res) => {
+export const ctRoutePPolylines = async(req,res) => {
     try{
         const{idRoute} = req.params;
         const{data,error} = await supabase

@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import userRoutes from './routes/usersRoutes.js';
-import busRotes from './routes/busRoutes.js';
+import busCoordinatesRoutes from './routes/busCoordinatesRoutes.js';
 import busDriversRoutes from './routes/busDriversRoutes.js';
 import highSchoolRoutes from './routes/highSchoolRoutes.js';
 
@@ -12,7 +12,7 @@ app.use(express.json());
 
 app.use('/api/drivers', busDriversRoutes);
 app.use('/api/users', userRoutes);
-app.use('/api/bus',busRotes);
+app.use('/api/bus',busCoordinatesRoutes);
 app.use('/api/highschool',highSchoolRoutes);
 
 app.use((req, res, next) => {

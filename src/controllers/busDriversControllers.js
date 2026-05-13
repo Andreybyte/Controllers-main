@@ -130,7 +130,7 @@ export const deleteBusDriver = async (req, res) => {
 
 export const getBusDriverProfile = async (req, res) => {
     try{
-        const idBusDriver = req.busdriver.id;
+        const idBusDriver = req.params;
 
         const {data:profile, error:userError} = await supabase
             .from('busdrivers')
