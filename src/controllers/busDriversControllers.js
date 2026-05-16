@@ -134,8 +134,8 @@ export const getBusDriverProfile = async (req, res) => {
 
         const {data:profile, error:userError} = await supabase
             .from('busdrivers')
-            .select('*')
             .eq('id_busdriver', idBusDriver)
+            .select('*')        
             .single();
         if(profile){
             return res.status(200).json({
