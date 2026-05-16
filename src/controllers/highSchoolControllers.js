@@ -23,6 +23,10 @@ export const putHighSchoolData = async(req, res) => {
 
 }
 
+export const updateHighSchoolProfile = async (req, res) => {
+    
+}
+
 export const getHighSchoolProfile = async(req,res) => {
     try{
         const {idhighschool} = req.params;
