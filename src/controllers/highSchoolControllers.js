@@ -24,8 +24,27 @@ export const putHighSchoolData = async(req, res) => {
 }
 
 export const updateHighSchoolProfile = async (req, res) => {
+
+    try{
+        const{idHighSchool} = req.params;
+        const{data, error} = await supabase
+            .from('highschool')
+            .select(`
+                name_highschool,
+                location_latitud,
+                location_longitud`)
+            .eq()
+            .single()
+            ;
+            if(error) return res.status(400).json({error: error.message});
+            
+            
+        }catch(error){
+            res.status(500).json({error: 'Error del servidor'});
+        }
+    }
     
-}
+
 
 export const getHighSchoolProfile = async(req,res) => {
     try{
