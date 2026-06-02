@@ -1,6 +1,6 @@
 import { supabase } from "../config/supabase.js";
 
-export const createBus = (req, res) => {
+export const createBus = async (req, res) => {
     try{
         const {id_bus} = req.params;
         const{bus_number, is_available} = req.body;
@@ -17,7 +17,7 @@ export const createBus = (req, res) => {
         res.status(500).json({error: 'Error del servidor.'});
     }
 }
-export const updateBus = (req, res) => {
+export const updateBus = async (req, res) => {
     try{
         const {id_bus} = req.params;
         const{bus_number, is_available} = req.body;
@@ -37,7 +37,7 @@ export const updateBus = (req, res) => {
         res.status(500).json({error:'Error en el servidor.'})
     }
 }
-export const getBus = (req, res) => {
+export const getBus = async (req, res) => {
     try{
         const {id_bus} = req.params;
         const {data, error} = await supabase
@@ -57,7 +57,7 @@ export const getBus = (req, res) => {
         res.status(500).json({error:'Error del servidor'});
     }
 }
-export const deleteBus = (req, res) => {
+export const deleteBus = async (req, res) => {
     try{
         const {id_bus} = req.params;
         const {error} = await supabase

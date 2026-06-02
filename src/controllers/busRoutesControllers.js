@@ -19,7 +19,7 @@ export const createBusRoute = async (req, res) => {
         res.status(500).json({error: 'Error del servidor'})
     }
 }
-export const getBusRoute = (req, res) => {
+export const getBusRoute = async (req, res) => {
     try{
         const {id_Route} = req.params;
         const {data, error} = await supabase
@@ -41,7 +41,7 @@ export const getBusRoute = (req, res) => {
 
 
 
-export const updateBusRoute =(req, res) => {
+export const updateBusRoute = async (req, res) => {
    try{
     const {name_route, details_Route,start_route_lat, start_route_long } = req.body;
     const {data, error} = await supabase
@@ -61,7 +61,7 @@ export const updateBusRoute =(req, res) => {
 }
 }
 
-export const deleteBusRoute = (req, res) => {
+export const deleteBusRoute = async (req, res) => {
     try{
         const {id_Route} = req.params;
         const {error} = await supabase
