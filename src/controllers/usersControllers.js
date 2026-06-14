@@ -15,19 +15,12 @@ export const SignUpUser = async (req, res) => {
         const { data: authData, error: authError } = await supabase.auth.signUp({
             email,
             password,
-            options: {
-                data: {
-                    name_user: name_user // Esto viaja en raw_user_meta_data
-                }
-            }
         });
 
-        if (authError) {
-            return res.status(400).json({ error: authError.message });
-        }
-
-        // 2. Si tu trigger no actualiza el nombre automáticamente, lo hacemos de forma manual aquí
+        if (authError) return res.status(400).json({ error: authError.message });
         
+/*
+       
         res.status(201).json({
             message: "Usuario creado exitosamente",
             user: {
@@ -36,7 +29,8 @@ export const SignUpUser = async (req, res) => {
                 name:name_user
             }
         })
-        /*
+            */
+        
         const { data: userData, error: updateError } = await supabase
             .from('users')
             .update({ name_user })
@@ -48,7 +42,7 @@ export const SignUpUser = async (req, res) => {
             await supabase.auth.admin.deleteUser(authData.user.id);
             return res.status(400).json({ error: updateError.message });
         }
-
+        /*
         res.status(201).json({ 
             message: "Usuario creado con éxito", 
             user: userData ? userData[0] : authData.user 
@@ -61,59 +55,56 @@ export const SignUpUser = async (req, res) => {
     }
 }; //CREAR USER
 
-export const SignInUser = async (req,res)=>{
-    /*Loguear al usuario con una cuenta ya creada, para hacer login y nos devuelve un token UNICO para poder acceder a otras funciones que solo usuarios o admins puedan usar. Por motivos de seguridad que ninguna otra persona pueda hacer peticiones Importante*(DESPUES DE AQUÍ SE VALIDA EL TOKEN)* */
-    console.log("Cuerpo recibido en SignIn:" , req.body);
+export const SignInUser = async (req, res) => {
+    console.log("Cuerpo recibido en SignIn:", req.body);
     try {
-        // Corregido: Mapeamos según lo que envías desde Thunder Client (email y password)
         const { email, password } = req.body;
 
         if (!email || !password) {
-            return res.status(400).json({ error: "Email y contraseña son obligatorios" });
+            return res.status(400).json({ error: "Faltan correo o contraseña" });
         }
 
-        // Intentamos el login en Supabase
+        // 1. Autenticación en Supabase Auth
         const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
             email,
             password,
         });
 
-        if (authError) {
-            return res.status(400).json({ error: authError.message });
-        }
+        if (authError) return res.status(400).json({ error: authError.message });
 
-        // Control de seguridad: Si la cuenta requiere confirmación por email, 'session' podría ser null
-        if (!authData.session) {
-            return res.status(401).json({ error: "Por favor, verifica tu correo electrónico antes de ingresar." });
-        }
+        const userId = authData.user.id;
+        const token = authData.session.access_token;
 
-        // Traemos los datos complementarios de la tabla pública
-        const { data: userData, error: userError } = await supabase
+        // 2. Buscar el perfil en la tabla pública usando el ID de Auth
+        const { data: profile, error: userError } = await supabase
             .from('users')
-            .select('id_user', 'name_user')
-            .eq('id_user', authData.user.id)
-            .single();
+            .select('*')
+            .eq('id_user', userId)
+            .maybeSingle(); // Evita el error PGRST116 si no encuentra coincidencia
 
-        if (userError || !userData) {
-            console.error("Error al buscar perfil público:", userError);
-            // No rompemos, respondemos con lo que tenemos de Auth
+        if (userError) {
+            console.error("Error en la consulta de la base de datos:", userError.message);
+            return res.status(500).json({ error: "Error interno al buscar el perfil" });
         }
 
-        res.status(200).json({
-            message: "Bienvenido a BusApp",
-            token: authData.session.access_token,
-            user: {
-                id: authData.user.id,
-                email: authData.user.email,
-                name: userData ? userData.name_user : "Sin Nombre",
-            }
+        // CONTROL: Si la fila existe en la BD pero aquí llega null, algo pasa con los permisos o el ID
+        if (!profile) {
+            console.log(`[ALERTA] Auth correcto para ${email}, pero no hay fila en 'public.users' con id_user: ${userId}`);
+            return res.status(404).json({ error: "El perfil del usuario no existe en la tabla pública" });
+        }
+
+        // 3. Si todo está bien, devolvemos el token y los datos de la fila
+        return res.status(200).json({
+            message: "Login exitoso",
+            token: token,
+            user: profile // Aquí van name_user, email_user, etc.
         });
 
     } catch (error) {
-        console.error("DETALLE DEL ERROR EN LOGIN:", error.message);
-        res.status(500).json({ error: "Error interno del servidor" });
+        console.error("Error en el servidor durante SignIn:", error);
+        return res.status(500).json({ error: "Error interno del servidor" });
     }
-};//LOGIN USER
+};
 
 export const putUser = async (req,res) => {
     /*EDITAR EMAIL O NOMBRE */
