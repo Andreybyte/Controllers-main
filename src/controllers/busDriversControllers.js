@@ -8,8 +8,8 @@ export const signUpBusDriver = async (req, res )=> {
     try{
     const {nameBusDriver, phoneNumberBuDriver, profileImageBusDriver,emailBusDriver, passwordBusDriver}=req.body;
     
-    if(!emailBusDriver|| !passwordBusDriver){
-        console.log("¡Faltan datos! Email:", emailBusDriver, "Pass:", passwordBusDriver);
+    if(!emailBusDriver|| !passwordBusDriver|| !nameBusDriver){
+        console.log("¡Faltan datos!: email, contraseña o nombre");
         return res.status(400).json({error:'Faltan email o contraseña'});
     }
     //Se hace el SIGNUP con el Auth de SUPABASE
@@ -29,7 +29,10 @@ export const signUpBusDriver = async (req, res )=> {
 
             }])
         .select();
-    if (error) return res.status(400).json({authErrorerror:error.message})
+    if (error) {
+        await supabase.auth.admin.deleteUser(authData.user.id) 
+        return res.status(400).json({error: "Error al crear el usuario, intente nuevamente."})
+    }
         console.log('DATOS DE BUSDRIVER DESDE DB', data);
         res.status(201).json({message: 'Conductor creado y autenticado con exito', user: data[0]}); 
 
@@ -116,7 +119,7 @@ export const putBusDriver = async(req,res) => {
 }//EDITAR LA INFORMACION DEL CONDUCTOR
 
 export const deleteBusDriver = async (req, res) => {
-
+    try{
     const {idBusDriver} = req.params;
     const {data, error} = await supabase
         .from('busdrivers')
@@ -124,7 +127,9 @@ export const deleteBusDriver = async (req, res) => {
         .eq('id_busdriver', idBusDriver);
     if(error) return res.status(400).json({error: error.message});
     res.json({message: `Conductor ${idBusDriver} eliminado.`})
-        
+    }catch(error){
+        res.status(500).json({error:"Erro del servidor"})
+    }    
 }//BORRAR USUARIOS(SOLO PARA ADMINS)
 
 

@@ -2,81 +2,117 @@ import { supabase } from '../config/supabase.js';
 
 
 
-export const SignUpUser = async (req,res) => {
-    /*Funcion para hacer el post del usuario, pedimos todos los datos necesarios para poder crear al usuario, después usamos SignIn(Login) para ingresar con el user */
-    console.log("Cuerpo recibido:", req.body);
+export const SignUpUser = async (req, res) => {
+    console.log("Cuerpo recibido en SignUp:", req.body);
     try {
-    const {name_user, email, password} = req.body;
+        const { name_user, email, password } = req.body;
 
-    if (!email || !password) {
-            console.log("¡Faltan datos! Email:", email, "Pass:", password);
-            return res.status(400).json({ error: "Faltan email o contraseña" });
+        if (!email || !password || !name_user) {
+            return res.status(400).json({ error: "Faltan email, contraseña o nombre de usuario" });
         }
-    //***Hacemos el SIGNUP con el Auth de SUPABASE***
-    const {data: authData,error: authError} = await supabase.auth.signUp({
-        email,
-        password,
-    });
-    if (authError) return res.status(400).json({error: authError.message});
-    //Pedimos los datos desde el auth de SUPABASE que guardamos y extras
-    const {data,error} = await supabase
-        .from('users')
-        .insert([{
-            id_user: authData.user.id,// El UUID de Auth
-            name_user,
-            email_user: email //EL EMAIL DE Auth
-            }])
-        .select();
-    if (error) return res.status(400).json({authError: error.message})
-        console.log("DATOS DE USER DESDE DB:", data);
-        res.status(201).json({ message: "Usuario creado y autenticado", user: data[0] });
-}catch(error){
-    res.status(500).json({ authError: "Error en el servidor" });
-}
-};//CREAR USER
+
+        // 1. Hacemos el SIGNUP pasando los metadatos necesarios para los Triggers de Postgres
+        const { data: authData, error: authError } = await supabase.auth.signUp({
+            email,
+            password,
+            options: {
+                data: {
+                    name_user: name_user // Esto viaja en raw_user_meta_data
+                }
+            }
+        });
+
+        if (authError) {
+            return res.status(400).json({ error: authError.message });
+        }
+
+        // 2. Si tu trigger no actualiza el nombre automáticamente, lo hacemos de forma manual aquí
+        
+        res.status(201).json({
+            message: "Usuario creado exitosamente",
+            user: {
+                id: authData.user.id,
+                email: authData.user.email,
+                name:name_user
+            }
+        })
+        /*
+        const { data: userData, error: updateError } = await supabase
+            .from('users')
+            .update({ name_user })
+            .eq('id_user', authData.user.id)
+            .select();
+
+        if (updateError) {
+            // Si falla el guardado en la tabla pública, borramos el usuario de Auth por consistencia
+            await supabase.auth.admin.deleteUser(authData.user.id);
+            return res.status(400).json({ error: updateError.message });
+        }
+
+        res.status(201).json({ 
+            message: "Usuario creado con éxito", 
+            user: userData ? userData[0] : authData.user 
+        });
+        */
+
+    } catch (error) {
+        console.error("Error en el servidor durante SignUp:", error);
+        res.status(500).json({ error: "Error interno del servidor" });
+    }
+}; //CREAR USER
 
 export const SignInUser = async (req,res)=>{
     /*Loguear al usuario con una cuenta ya creada, para hacer login y nos devuelve un token UNICO para poder acceder a otras funciones que solo usuarios o admins puedan usar. Por motivos de seguridad que ninguna otra persona pueda hacer peticiones Importante*(DESPUES DE AQUÍ SE VALIDA EL TOKEN)* */
-    try{
-    const {email_user: email,password_user: password} = req.body;
-    //USAMOS EL LOGIN DE SUPABASE PARA ACCEDER A PASSWORD Y EMAIL
-    const {data: authData,error: authError} = await supabase.auth.signInWithPassword({
-        email,
-        password,
-    });
-    if (authError) return res.status(400).json({authError: "Credenciales Incorrectas"});
+    console.log("Cuerpo recibido en SignIn:" , req.body);
+    try {
+        // Corregido: Mapeamos según lo que envías desde Thunder Client (email y password)
+        const { email, password } = req.body;
 
-    const {data: userData,error: userError} = await supabase
-        .from('users')
-        .select(`
-            id_user,
-            name_user
-        `)
-        .eq('id_user',authData.user.id)//USAMOS EL UUID DE REFERENCIA
-        .single();
-
-        if (userError || !userData){
-            /*SI NO LLEGARON LOS DATOS O SUCEDIÓ ERROR*/
-            console.error("ERROR DE SUPABASE:", userError);
-            res.status(404).json({error: "ERROR"});
-            return
+        if (!email || !password) {
+            return res.status(400).json({ error: "Email y contraseña son obligatorios" });
         }
 
-        console.log("DATOS DE USER DESDE DB:", userData);    
-    res.status(200).json({
-        /*SE VERIFICA AL USUARIO Y SE LE TA UN TOKEN UNICO, ACCEDEMOS AL AUTH SUPABASE */
-        message: "Bienvenido a BusApp",
-        token: authData.session.access_token,
-        user: {
-            id: authData.user.id,
-            email: authData.user.email,
-            name: userData.name_user || "Sin Nombre",
+        // Intentamos el login en Supabase
+        const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+            email,
+            password,
+        });
+
+        if (authError) {
+            return res.status(400).json({ error: authError.message });
         }
-    });
-}catch(error){
-    console.error("DETALLE DEL ERROR:", error.message); //SI LA PETICION DA ERROR REVISAR CONSOLA
-    res.status(500).json({ error: error.message });
-}
+
+        // Control de seguridad: Si la cuenta requiere confirmación por email, 'session' podría ser null
+        if (!authData.session) {
+            return res.status(401).json({ error: "Por favor, verifica tu correo electrónico antes de ingresar." });
+        }
+
+        // Traemos los datos complementarios de la tabla pública
+        const { data: userData, error: userError } = await supabase
+            .from('users')
+            .select('id_user', 'name_user')
+            .eq('id_user', authData.user.id)
+            .single();
+
+        if (userError || !userData) {
+            console.error("Error al buscar perfil público:", userError);
+            // No rompemos, respondemos con lo que tenemos de Auth
+        }
+
+        res.status(200).json({
+            message: "Bienvenido a BusApp",
+            token: authData.session.access_token,
+            user: {
+                id: authData.user.id,
+                email: authData.user.email,
+                name: userData ? userData.name_user : "Sin Nombre",
+            }
+        });
+
+    } catch (error) {
+        console.error("DETALLE DEL ERROR EN LOGIN:", error.message);
+        res.status(500).json({ error: "Error interno del servidor" });
+    }
 };//LOGIN USER
 
 export const putUser = async (req,res) => {
@@ -102,15 +138,20 @@ export const putUser = async (req,res) => {
 
 export const deleteUser = async (req,res) => { 
     //FUNCION UNICA Y ESPECIFICAMENTE PARA ADMINS Y USER PROPIO (CAMBIAR A FUTURO SOLO ADMINS)
+    try{
     const {idUser} = req.params
     const {data,error} = await supabase
         .from('users')
         .delete()
         .eq('id_user',idUser);
-    if(error) return res.status(400).json({error: error.message})
+        if(error) return res.status(400).json({error: error.message})
         res.json({mensaje: `Usuario ${idUser} eliminado`});
-};//BORRAR USUARIO(ADMINS)
-
+    }catch(error){
+        res.status(500).json({error: "Error del servidor"});
+    }
+   
+    
+}
 export const getMyProfile = async (req,res) =>{
     try{
     const userId = req.user.id;

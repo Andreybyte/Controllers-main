@@ -2,6 +2,10 @@ import {createClient} from '@supabase/supabase-js';
 import dotenv from 'dotenv';
 dotenv.config();
 const supabaseUrl = process.env.supabaseUrl;
-const supabaseAnonKey = process.env.supabaseAnonKey;
+const supabaseRoleKey = process.env.supabaseRoleKey;
 
-export const supabase = createClient (supabaseUrl, supabaseAnonKey);
+console.log("Url:",  supabaseUrl);
+console.log("RoleKey:",  supabaseRoleKey);
+
+export const supabase = createClient(supabaseUrl, supabaseRoleKey );
+
