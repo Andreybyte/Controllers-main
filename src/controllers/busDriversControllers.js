@@ -3,14 +3,14 @@ import { supabase } from "../config/supabase.js";
 export const signUpBusDriver = async (req, res )=> {
     //Esta funcion realiza el post del conductor, pedimos todos los datos necesarios
 
-    console,log,("Cuerpo recibido:", req.body) ;
+    console.log("Cuerpo recibido:", req.body) ;
 
     try{
-    const {nameBusDriver, phoneNumberBuDriver, profileImageBusDriver,emailBusDriver, passwordBusDriver}=req.body;
+    const {nameBusDriver, phoneNumberBusDriver, profileImageBusDriver,emailBusDriver, passwordBusDriver}=req.body;
     
     if(!emailBusDriver|| !passwordBusDriver|| !nameBusDriver){
         console.log("¡Faltan datos!: email, contraseña o nombre");
-        return res.status(400).json({error:'Faltan email o contraseña'});
+        return res.status(400).json({error:'Faltan email o contraseña o nombre'});
     }
     //Se hace el SIGNUP con el Auth de SUPABASE
     const {data:authData,error:authError} = await supabase.auth.signUp({
@@ -23,13 +23,16 @@ export const signUpBusDriver = async (req, res )=> {
     const {data,error} = await supabase
         .from('busdrivers')
         .insert([{  
-            id_busdriver:authData.user.id, //El UUID de Auth
-            name_busdriver,
-            email_busdriver: authData.user.email //El  email del Auth
+            id_busdriver: authData.user.id, 
+                name_busdriver: nameBusDriver, 
+                email_busdriver: authData.user.email, 
+                phone_number_busdriver: phoneNumberBusDriver || null,
+                profile_image_busdriver: profileImageBusDriver || null
 
             }])
         .select();
     if (error) {
+        console.log(error)
         await supabase.auth.admin.deleteUser(authData.user.id) 
         return res.status(400).json({error: "Error al crear el usuario, intente nuevamente."})
     }
@@ -38,7 +41,7 @@ export const signUpBusDriver = async (req, res )=> {
 
     
     }catch(error){
-    res.status(500).json({authError: 'Error del servidor'});
+    res.status(500).json({authError: 'Error del servidor', details: error.message});
     }
 
 };//CREAR CONDUCTOR
@@ -135,7 +138,7 @@ export const deleteBusDriver = async (req, res) => {
 
 export const getBusDriverProfile = async (req, res) => {
     try{
-        const idBusDriver = req.params;
+        const {idBusDriver} = req.params;
 
         const {data:profile, error:userError} = await supabase
             .from('busdrivers')

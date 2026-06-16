@@ -19,17 +19,6 @@ export const SignUpUser = async (req, res) => {
 
         if (authError) return res.status(400).json({ error: authError.message });
         
-/*
-       
-        res.status(201).json({
-            message: "Usuario creado exitosamente",
-            user: {
-                id: authData.user.id,
-                email: authData.user.email,
-                name:name_user
-            }
-        })
-            */
         
         const { data: userData, error: updateError } = await supabase
             .from('users')
@@ -42,12 +31,7 @@ export const SignUpUser = async (req, res) => {
             await supabase.auth.admin.deleteUser(authData.user.id);
             return res.status(400).json({ error: updateError.message });
         }
-        /*
-        res.status(201).json({ 
-            message: "Usuario creado con éxito", 
-            user: userData ? userData[0] : authData.user 
-        });
-        */
+       
 
     } catch (error) {
         console.error("Error en el servidor durante SignUp:", error);

@@ -5,10 +5,10 @@ import { protectRoute } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
-router.post('/busdriver/signup', protectRoute,signUpBusDriver, );
-router.post('/busdriver/signin', protectRoute,signInBusDriver);
+router.post('/signup', signUpBusDriver );
+router.post('/signin', signInBusDriver);
 //router.get('/:idBusDriver',);
-router.get('/busdriver/profile', protectRoute, getBusDriverProfile);
+router.get('/profile', protectRoute, getBusDriverProfile);
 router.delete('/:idBusDriver', deleteBusDriver);
 router.put('/:idBusDriver', putBusDriver);
 
