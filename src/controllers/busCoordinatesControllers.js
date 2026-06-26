@@ -6,20 +6,27 @@ import { supabase } from '../config/supabase.js';
 export const putBusData = async(req,res) => {
     try{
         const{idRoute} = req.params;
-        const{current_lat,current_long,velocity} = req.body;
+        const{id_bus, current_lat,current_long,velocity} = req.body;
+
         const {data,error} = await supabase
             .from('current_bus_in_route')
-            .upsert({current_lat,current_long,velocity},
-                    {onConflict: 'idRoute'}
+            .upsert(
+                {
+                    id_route: idRoute,
+                    id_bus,
+                    current_lat,
+                    current_long,
+                    velocity
+                },
+            {onConflict: 'id_route'}
             )
-            .eq('id_route',idRoute)
             .select();
 
-        if (error)return res.status(400).json({error:error.message})
-        res.json({message: "Actualizado correctamente", data})
+        if (error)return res.status(400).json({error:error.message});
+        res.json({message: "Actualizado correctamente", data});
 
     }catch(error){
-        res.status(500).json({message:"Error del servidor"})
+        res.status(500).json({message:"Error del servidor", error: error.message});
     }
 
 }
@@ -70,6 +77,7 @@ export const deleteCurrentBusInRoute = async (req, res) => {
             .eq('id_route', idRoute)
             .delete();
         if(error) return res.status(404).json({error: error.message});  
+        res.json({ message: "Registro eliminado correctamente" });
     }catch(error){
         res.status(500).json({error: 'Error al obtener las coordenadas'})
     }

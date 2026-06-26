@@ -12,7 +12,7 @@ app.use(express.json());
 
 app.use('/api/drivers', busDriversRoutes);
 app.use('/api/users', userRoutes);
-app.use('/api/bus',busCoordinatesRoutes);
+app.use('/api/busInRoute',busCoordinatesRoutes);
 app.use('/api/highschool',highSchoolRoutes);
 
 app.use((req, res, next) => {

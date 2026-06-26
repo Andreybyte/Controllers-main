@@ -6,9 +6,9 @@ const router = express.Router();
 
 
  // router.post('/id_route')
-router.put('/:id_route', protectRoute,putBusData);
-router.get('/:id_route', protectRoute, ctRoutePPolylines);
-router.get('/:id_route', protectRoute, getBusData);
-router.delete('/:id_route',protectRoute,deleteCurrentBusInRoute);
+router.put('/:idRoute/data', protectRoute, putBusData);
+router.get('/:idRoute/polylines', protectRoute, ctRoutePPolylines);
+router.get('/:idRoute', protectRoute, getBusData);
+router.delete('/:idRoute',protectRoute,deleteCurrentBusInRoute);
 
 export default router;
