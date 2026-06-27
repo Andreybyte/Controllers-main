@@ -4,6 +4,7 @@ import userRoutes from './routes/usersRoutes.js';
 import busCoordinatesRoutes from './routes/busCoordinatesRoutes.js';
 import busDriversRoutes from './routes/busDriversRoutes.js';
 import highSchoolRoutes from './routes/highSchoolRoutes.js';
+import busesControllersRoutes from './routes/busesControllersRoutes.js'
 
 const app = express();
 app.use(cors());
@@ -14,6 +15,8 @@ app.use('/api/drivers', busDriversRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/busInRoute',busCoordinatesRoutes);
 app.use('/api/highschool',highSchoolRoutes);
+app.use('/api/buses', busesControllersRoutes);
+
 
 app.use((req, res, next) => {
     console.log(`LOG: ${req.method} a la ruta ${req.url}`);

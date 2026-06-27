@@ -7,7 +7,6 @@ const router = express.Router();
 
 router.post('/signup', signUpBusDriver );
 router.post('/signin', signInBusDriver);
-//router.get('/:idBusDriver',);
 router.get('/profile', protectRoute, getBusDriverProfile);
 router.delete('/:idBusDriver', deleteBusDriver);
 router.put('/:idBusDriver', putBusDriver);

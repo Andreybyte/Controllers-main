@@ -1,5 +1,5 @@
 import {supabase} from '../config/supabase.js';
-//Falta importar la configuracion de SUPABASE!!!!
+
 
 export const protectRoute = async (req,res,next) => {
     console.log("Verificando ruta:", req.path);

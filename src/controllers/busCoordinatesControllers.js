@@ -23,7 +23,7 @@ export const putBusData = async(req,res) => {
             .select();
 
         if (error)return res.status(400).json({error:error.message});
-        res.json({message: "Actualizado correctamente", data});
+        res.json({message: "Coordenadas y velocidad actualizadas correctamente.", data});
 
     }catch(error){
         res.status(500).json({message:"Error del servidor", error: error.message});

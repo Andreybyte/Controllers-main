@@ -6,7 +6,9 @@ export const createBus = async (req, res) => {
         const{bus_number, is_available} = req.body;
         const {data, error} = await supabase
         .from('buses')
-        .insert([{bus_number}])
+        .insert([{bus_number,
+                is_available
+        }])
         .select();
         if(error) return res.status(400).json({error:error.message});
         if (data.length == 0){
@@ -62,11 +64,12 @@ export const deleteBus = async (req, res) => {
         const {id_bus} = req.params;
         const {error} = await supabase
             .from('buses')
-            .eq('id_bus', id_bus)
-            .delete();
+            .delete()
+            .eq('id_bus', id_bus);
         if (error) return res.status(400).json({error: error.message});
         res.status(200).json({message:'El bus se elimino con exito.'})
     }catch(error){
+        console.error('Error en deleteBus:', error)
         res.status(500).json({error:'Error del servidor.'})
     }
 }
