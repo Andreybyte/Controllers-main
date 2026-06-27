@@ -9,19 +9,23 @@ export const createBusRoute = async (req, res) => {
             .insert([{name_route, 
                 details_route, 
                 start_route_lat, 
-                start_route_long}]);
+                start_route_long
+            }])
+               .select();
+            
         if(error) return res.status(400).json({error:error.message});
         if (data.length == 0){
             return res.status(400).json({error: 'Error al añadir la ruta.'})
         }
-        res.status(200).json({message:'¡¡Ruta añadida con exito!!'});
+        res.status(200).json({message:'¡Ruta añadida con exito!'});
     }catch(error){
-        res.status(500).json({error: 'Error del servidor'})
+        res.status(500).json({error: 'Error del servidor'});
+        console.error('Error del servidor con:', error);
     }
 }
 export const getBusRoute = async (req, res) => {
     try{
-        const {id_Route} = req.params;
+        const {idRoute} = req.params;
         const {data, error} = await supabase
         .from('routes')
         .select(`
@@ -30,7 +34,7 @@ export const getBusRoute = async (req, res) => {
             start_route_lat,
             start_route_long
             `)
-        .eq('id_route', id_Route)
+        .eq('id_route', idRoute)
         .single();
         if (error) return res.status(400).json({error:error.message});
         res.json(data);
@@ -43,14 +47,17 @@ export const getBusRoute = async (req, res) => {
 
 export const updateBusRoute = async (req, res) => {
    try{
-    const {name_route, details_Route,start_route_lat, start_route_long } = req.body;
+    const {idRoute} = req.params;
+    const {name_route, details_route,start_route_lat, start_route_long } = req.body;
     const {data, error} = await supabase
         .from('routes')
         .update({
             name_route, 
             details_route,
             start_route_lat, 
-            start_route_long});
+            start_route_long})
+        .eq("id_route", idRoute)
+        .select();
     if(error) return res.status(400).json({error:error.message});
     if(data.length == 0){
         return res.status(400).json({error:'Error al actualizar ruta'})

@@ -5,7 +5,7 @@ import busCoordinatesRoutes from './routes/busCoordinatesRoutes.js';
 import busDriversRoutes from './routes/busDriversRoutes.js';
 import highSchoolRoutes from './routes/highSchoolRoutes.js';
 import busesControllersRoutes from './routes/busesControllersRoutes.js'
-import busRoutesRoutes from './routes/busRoutesRoutes.js'
+import busRoutes from './routes/busRoutesRoutes.js';
 
 const app = express();
 app.use(cors());
@@ -17,7 +17,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/busInRoute',busCoordinatesRoutes);
 app.use('/api/highschool',highSchoolRoutes);
 app.use('/api/buses', busesControllersRoutes);
-app.use('/api/routes', busRoutesRoutes);
+app.use('/api/routes', busRoutes);
 
 
 app.use((req, res, next) => {
