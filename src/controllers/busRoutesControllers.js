@@ -70,14 +70,15 @@ export const updateBusRoute = async (req, res) => {
 
 export const deleteBusRoute = async (req, res) => {
     try{
-        const {id_Route} = req.params;
+        const {idRoute} = req.params;
         const {error} = await supabase
-            .from('Routes')
-            .eq('id_route', id_Route)
-            .delete();
+            .from('routes')
+            .delete()
+            .eq('id_route', idRoute);
         if(error) return res.status(400).json({error:error.message})
         res.status(200).json({message:'La ruta se elimino correctamente.'});
     }catch(error){
+        console.error('Error de', error);
         res.status(500).json({error:'Error del servidor'});
     }
 }
