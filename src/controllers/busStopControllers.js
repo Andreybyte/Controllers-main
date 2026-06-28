@@ -3,20 +3,20 @@ import { supabase } from "../config/supabase.js";
 export const createBusStop = async (req, res) => {
 
     try{
-        const {idBusStop} = req.params;
-        const{} = req.body;
+        const{name_bus_stop, location_bus_stop_lat, location_bus_stop_long, id_route} = req.body;
         const{data, error} = await supabase
             .from('bus_stop')
             .insert([{name_bus_stop,
                 location_bus_stop_lat,
                 location_bus_stop_long,
+                id_route
             }])
-            .select();
+                .select();
         if (error) return res.status(400).json({error:error.message});
         if (data.length == 0){
-            return res.status(400).json({error:'Error al actualizar la parada de bus.'})
+            return res.status(400).json({error:'Error al crear la parada de bus.'});
         }
-        res.status(200).json({message:'Parada de bus añadida con exito.'})
+        res.status(200).json({message:'Parada de bus añadida con exito.'});
 
     }catch(error){
         res.status(500).json({error: 'Error del servidor.'});
@@ -26,16 +26,17 @@ export const createBusStop = async (req, res) => {
 export const updateBusStop = async (req, res) => {
     try{
         const {idBusStop} = req.params;
-        const {name_bus_stop, location_bus_stop_lat, location_bus_stop_long} = req.body;
+        const {name_bus_stop, location_bus_stop_lat, location_bus_stop_long, id_route} = req.body;
         const {data, error} = await supabase
             .from('bus_stop')
-            .select(`
+            .update({
                 name_bus_stop,
                 location_bus_stop_lat, 
-                location_bus_stop_long
-                `)
+                location_bus_stop_long,
+                id_route
+                })
             .eq('id_bus_stop', idBusStop)
-            .single();
+            .select();
         if (error) return res.status(400).json({error:error.message});
         if(data.length == 0){
             return res.status(400).json({error:'Error al actualizar la parada de bus'});
@@ -43,6 +44,7 @@ export const updateBusStop = async (req, res) => {
         res.json(data);
     }catch(error){
         res.status(500).json({error: 'Error del servidor'});
+        console.error('Error en:', error);
     }
 }
 
@@ -52,11 +54,11 @@ export const getBusStop = async (req,res) => {
         const {data, error} = await supabase
             .from('bus_stop')
             .select(`
-                name_busstop,
+                name_bus_stop,
                 location_bus_stop_lat,
                 location_bus_stop_long      
                 `)
-            .eq('id_busstop', idBusStop)
+            .eq('id_bus_stop', idBusStop)
             .single();
         if(error) return res.status(400).json({error:error.message});
         res.json(data);
