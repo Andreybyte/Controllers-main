@@ -140,7 +140,7 @@ export const getMyProfile = async (req,res) =>{
     if (profile){
         return res.status(200).json({
             ...profile,
-            userType: 'client'
+            userType: 'student'
         });
     }
     const {data: admin,error: adminError} = await supabase

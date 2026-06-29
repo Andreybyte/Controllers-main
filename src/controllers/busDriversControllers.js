@@ -32,9 +32,9 @@ export const signUpBusDriver = async (req, res )=> {
             }])
         .select();
     if (error) {
-        console.log(error)
-        await supabase.auth.admin.deleteUser(authData.user.id) 
-        return res.status(400).json({error: "Error al crear el usuario, intente nuevamente."})
+        console.log(error);
+        await supabase.auth.admin.deleteUser(authData.user.id) ;
+        return res.status(400).json({error: "Error al crear el usuario, intente nuevamente."});
     }
         console.log('DATOS DE BUSDRIVER DESDE DB', data);
         res.status(201).json({message: 'Conductor creado y autenticado con exito', user: data[0]}); 
@@ -68,22 +68,22 @@ export const signInBusDriver = async (req, res) => {
             `)
        .eq('id_busdriver', authData.user.id)
        .single();
-            if (userError || !userData){
-            console.error('Error de SUPABASE:', userError);
-            res.status(404).json({error: "ERROR"});
-            return
-            }
+    if (userError || !userData){
+        console.error('Error de SUPABASE:', userError);
+        res.status(404).json({error: "ERROR"});
+        return
+    }
 
         console.log('DATOS DE BUSDRIVER DESDE DB:', userData);
 
         res.status(200).json({
 
-            message: ' Bienvenido a BusApp',
+            message: ' Bienvenido a BusNex',
             token: authData.session.access_token,
             user: {
                 id: authData.user.id,
                 email: authData.user.email,
-                name: userData.name_busdriver || 'Sin nombre',
+                name: userData.name_busdriver || 'Sin nombre'
 
             }
         });
