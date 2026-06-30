@@ -1,0 +1,134 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "BusNex API Documentation",
+    "version": "1.0.0",
+    "description": "Documentación de los controladores y rutas del backend de BusNex"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Servidor de Desarrollo Local"
+    }
+  ],
+  "paths": {
+    "/api/auth/student/signup": {
+      "post": {
+        "summary": "Registrar un nuevo estudiante en BusNex",
+        "tags": ["Autenticación - Estudiantes"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "password", "name"],
+                "properties": {
+                  "name": { 
+                    "type": "string", 
+                    "example": "Andrey Solís" 
+                  },
+                  "email": { 
+                    "type": "string", 
+                    "example": "estudiante@busnex.com" 
+                  },
+                  "password": { 
+                    "type": "string", 
+                    "format": "password", 
+                    "example": "MepEstudiante123*" 
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Estudiante registrado con éxito",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string", "example": "Registro estudiantil exitoso" },
+                    "user": {
+                      "type": "object",
+                      "properties": {
+                        "id": { "type": "string", "example": "fa7b0716-bf63-4903-a124-789a69cd3299" },
+                        "name": { "type": "string", "example": "Andrey Solís" },
+                        "email": { "type": "string", "example": "estudiante@busnex.com" },
+                        "role": { "type": "string", "example": "student" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "El correo ya está registrado o los datos enviados no son válidos"
+          }
+        }
+      }
+    },
+    "/api/auth/student/signin": {
+      "post": {
+        "summary": "Iniciar sesión como estudiante",
+        "tags": ["Autenticación - Estudiantes"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "password"],
+                "properties": {
+                  "email": { 
+                    "type": "string", 
+                    "example": "estudiante@busnex.com" 
+                  },
+                  "password": { 
+                    "type": "string", 
+                    "format": "password", 
+                    "example": "MepEstudiante123*" 
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Inicio de sesión correcto",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "access_token": { 
+                      "type": "string", 
+                      "description": "JWT Access Token generado por Supabase para la sesión del estudiante",
+                      "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." 
+                    },
+                    "user": {
+                      "type": "object",
+                      "properties": {
+                        "id": { "type": "string", "example": "fa7b0716-bf63-4903-a124-789a69cd3299" },
+                        "name": { "type": "string", "example": "Andrey Solís" },
+                        "email": { "type": "string", "example": "estudiante@busnex.com" },
+                        "role": { "type": "string", "example": "student" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Credenciales inválidas (correo o contraseña incorrectos)"
+          }
+        }
+      }
+    }
+  }
+}

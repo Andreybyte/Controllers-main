@@ -1,7 +1,8 @@
-
+import swaggerUi from 'swagger-ui-express';
+import swaggerDocument from './swagger.json' with { type: 'json' };
 import app from './src/app.js';
 //FALTA IMPORTAR EL SUPABASE IMPORTANTE!!!
-
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 /*Definimos la ruta al arrancar el servidor de node.js*/
 
 const PORT = process.env.PORT || 3000; //USAMOS PUERTO 3000 TEMPORAL LOCALHOST
